@@ -1,3 +1,4 @@
+import uuid
 from app.repositories.paciente_repository import PacienteRepository
 from app.repositories.medico_repository import MedicoRepository
 
@@ -8,10 +9,6 @@ class CreadorPerfilBase:
     Cada subclase sabe como completar el registro segun su rol especifico.
     """
     def crear_perfil_especifico(self, usuario_id: str, datos_extra: dict):
-        """
-        Por defecto no hace nada extra (ej. Administrador, Recepcion
-        solo necesitan el profile base, sin tabla adicional).
-        """
         return None
 
 
@@ -22,8 +19,8 @@ class CreadorPerfilMedico(CreadorPerfilBase):
     def crear_perfil_especifico(self, usuario_id: str, datos_extra: dict):
         datos = {
             "usuario_id": usuario_id,
-            "especialidad": datos_extra.get("especialidad", "General"),
-            "colegiatura": datos_extra.get("colegiatura", ""),
+            "especialidad": datos_extra.get("especialidad") or "General",
+            "colegiatura": datos_extra.get("colegiatura") or "",
             "disponibilidad": datos_extra.get("disponibilidad", [])
         }
         return self.repo.crear(datos)
@@ -34,11 +31,14 @@ class CreadorPerfilPaciente(CreadorPerfilBase):
         self.repo = PacienteRepository()
 
     def crear_perfil_especifico(self, usuario_id: str, datos_extra: dict):
+        # Si no se proporciona un numero de historial, lo generamos automaticamente
+        historial = datos_extra.get("historial_clinico_nro") or f"HC-{uuid.uuid4().hex[:8].upper()}"
+
         datos = {
             "usuario_id": usuario_id,
             "fecha_nacimiento": datos_extra.get("fecha_nacimiento"),
             "telefono": datos_extra.get("telefono"),
-            "historial_clinico_nro": datos_extra.get("historial_clinico_nro")
+            "historial_clinico_nro": historial
         }
         return self.repo.crear(datos)
 
