@@ -123,3 +123,47 @@ Todos con contraseña: `Willy123!`
 - [ ] Row Level Security (RLS) activado en todas las tablas
 - [ ] Endpoints adicionales de Médico (diagnósticos, recetas)
 - [ ] Endpoints adicionales de Administrador (editar/desactivar usuarios)
+
+## Cómo retomar el proyecto desde otra PC
+
+Como todo el desarrollo vive en la nube (Codespaces + Supabase), no necesitas instalar nada en la nueva computadora. Solo necesitas un navegador y tu cuenta de GitHub.
+
+### 1. Abrir el Codespace existente
+1. Entra a `https://github.com/willyvc3136/sistemaGHospitalaria`
+2. Inicia sesión con tu cuenta de GitHub si no lo has hecho.
+3. Clic en el botón verde **"Code"** → pestaña **"Codespaces"**.
+4. Debería aparecer tu Codespace ya creado (busca un nombre como "symmetrical sniffle" o similar). Haz clic sobre él para reabrirlo.
+   - Si no aparece ninguno (por ejemplo, si Codespaces lo eliminó por inactividad prolongada), crea uno nuevo con **"Create codespace on main"** — tu código está a salvo en GitHub de todas formas, solo se recreará el entorno.
+
+### 2. Abrir una terminal
+Una vez dentro del editor (se ve como VS Code):
+- Menú superior → **Terminal** → **New Terminal**
+- O el atajo `` Ctrl + ` ``
+
+### 3. Levantar el backend
+```bash
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+### 4. Abrir una segunda terminal para el frontend
+Con el ícono **"+"** en el panel de terminal (para no interrumpir el backend que quedó corriendo), y ahí:
+```bash
+cd frontend
+python3 -m http.server 3000
+```
+
+### 5. Hacer los puertos públicos
+En la pestaña **"PUERTOS"**, cambia la visibilidad de los puertos **8000** y **3000** a **"Public"** (clic derecho sobre cada uno → Port Visibility → Public). Esto es necesario cada vez que se crea o reinicia el Codespace.
+
+### 6. Abrir la aplicación
+Clic en el ícono de globo junto al puerto **3000** en la pestaña "PUERTOS" — se abrirá el login del sistema en una nueva pestaña del navegador.
+
+### Nota sobre el archivo `.env`
+El archivo `.env` (con las credenciales de Supabase) **no se sube a GitHub** por seguridad. Si abres el proyecto en un Codespace completamente nuevo (no el mismo de siempre), tendrás que recrearlo manualmente:
+```bash
+cat > .env << 'EOF_ENV'
+SUPABASE_URL=https://wqvztguntuazimwfsjkx.supabase.co
+SUPABASE_SERVICE_KEY=tu-clave-secreta-aqui
+EOF_ENV
+```
+(Reemplaza la clave por la real, disponible en Supabase → Project Settings → API → Secret keys). Si sigues usando el **mismo** Codespace de siempre, el `.env` ya está guardado ahí y no necesitas hacer nada.
