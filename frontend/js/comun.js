@@ -4,7 +4,7 @@ const nombreUsuario = sessionStorage.getItem('usuario_nombre');
 const rolUsuario = sessionStorage.getItem('usuario_rol');
 
 if (!token) {
-    window.location.href = 'index.html';
+    window.location.href = 'login.html';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -16,5 +16,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function cerrarSesion() {
     sessionStorage.clear();
-    window.location.href = 'index.html';
+    window.location.href = 'login.html';
 }
