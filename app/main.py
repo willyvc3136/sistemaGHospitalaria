@@ -1,10 +1,12 @@
 from fastapi import FastAPI
 from app.core.database import get_db
 from app.api.routes_auth import router as auth_router
+from app.api.routes_admin import router as admin_router
 
 app = FastAPI(title="Sistema de Gestion Hospitalaria")
 
 app.include_router(auth_router)
+app.include_router(admin_router)
 
 
 @app.get("/")
