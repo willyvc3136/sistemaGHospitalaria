@@ -1,4 +1,7 @@
 from fastapi import APIRouter, Depends
+from pydantic import BaseModel
+from datetime import datetime
+from typing import Optional
 from app.auth.rbac_middleware import requiere_rol
 from app.services.cita_service import CitaService
 from app.schemas.cita import CitaCreate
@@ -13,7 +16,7 @@ def crear_cita(
     usuario_actual: dict = Depends(requiere_rol("Recepción", "Administrador"))
 ):
     """
-    Crea una nueva cita. Solo Recepcion o Administrador pueden hacerlo.
+    Crea una nueva cita, con medico especifico. Solo Recepcion o Administrador.
     """
     service = CitaService()
     nueva_cita = service.crear_cita(
@@ -26,11 +29,31 @@ def crear_cita(
     return {"mensaje": "Cita creada exitosamente", "cita": nueva_cita}
 
 
+class CitaPacienteRequest(BaseModel):
+    fecha_hora: datetime
+    motivo: Optional[str] = None
+
+
+@router.post("/reservar")
+def reservar_cita_propia(
+    datos: CitaPacienteRequest,
+    usuario_actual: dict = Depends(requiere_rol("Paciente"))
+):
+    """
+    El paciente reserva su propia cita de consulta general.
+    Se asigna automaticamente a un medico de Medicina General.
+    """
+    service = CitaService()
+    nueva_cita = service.crear_cita_paciente(
+        paciente_id=usuario_actual["id"],
+        fecha_hora=datos.fecha_hora,
+        motivo=datos.motivo
+    )
+    return {"mensaje": "Cita reservada exitosamente", "cita": nueva_cita}
+
+
 @router.get("/mis-citas")
 def mis_citas(usuario_actual: dict = Depends(requiere_rol("Paciente"))):
-    """
-    El paciente autenticado puede ver sus propias citas.
-    """
     service = CitaService()
     citas = service.listar_citas_de_paciente(usuario_actual["id"])
     return {"citas": citas}
@@ -38,9 +61,6 @@ def mis_citas(usuario_actual: dict = Depends(requiere_rol("Paciente"))):
 
 @router.get("/mi-agenda")
 def mi_agenda(usuario_actual: dict = Depends(requiere_rol("Médico"))):
-    """
-    El medico autenticado puede ver su agenda de citas.
-    """
     service = CitaService()
     citas = service.listar_citas_de_medico(usuario_actual["id"])
     return {"citas": citas}
@@ -48,9 +68,6 @@ def mi_agenda(usuario_actual: dict = Depends(requiere_rol("Médico"))):
 
 @router.get("/lista-pacientes")
 def lista_pacientes(usuario_actual: dict = Depends(requiere_rol("Recepción", "Administrador"))):
-    """
-    Lista de pacientes para el formulario de creacion de citas.
-    """
     db = get_db()
     resultado = db.table("pacientes").select("usuario_id, profiles(nombre_completo)").execute()
     return {"pacientes": resultado.data}
@@ -58,9 +75,6 @@ def lista_pacientes(usuario_actual: dict = Depends(requiere_rol("Recepción", "A
 
 @router.get("/lista-medicos")
 def lista_medicos(usuario_actual: dict = Depends(requiere_rol("Recepción", "Administrador"))):
-    """
-    Lista de medicos para el formulario de creacion de citas.
-    """
     db = get_db()
     resultado = db.table("medicos").select("usuario_id, especialidad, profiles(nombre_completo)").execute()
     return {"medicos": resultado.data}

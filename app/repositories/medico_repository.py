@@ -21,6 +21,15 @@ class MedicoRepository:
         resultado = self.db.table("medicos").select("*").eq("usuario_id", usuario_id).single().execute()
         return resultado.data
 
+    def obtener_medico_general(self):
+        """
+        Retorna el primer medico disponible con especialidad 'Medicina General'.
+        Usado para asignar automaticamente citas reservadas por pacientes,
+        que luego pueden ser derivadas a un especialista por Recepcion.
+        """
+        resultado = self.db.table("medicos").select("*").ilike("especialidad", "%general%").limit(1).execute()
+        return resultado.data[0] if resultado.data else None
+
     def crear(self, datos: dict):
         resultado = self.db.table("medicos").insert(datos).execute()
         return resultado.data[0] if resultado.data else None

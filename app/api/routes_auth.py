@@ -1,7 +1,9 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+from typing import Optional
 from app.auth.supabase_client import login_usuario
 from app.core.database import get_db
+from app.services.usuario_service import UsuarioService
 
 router = APIRouter(prefix="/auth", tags=["Autenticacion"])
 
@@ -24,7 +26,6 @@ def login(datos: LoginRequest):
 
     usuario_id = resultado.user.id
 
-    # Buscar el perfil y su rol
     db = get_db()
     perfil = db.table("profiles").select("*, roles(nombre)").eq("id", usuario_id).single().execute()
 
@@ -40,3 +41,31 @@ def login(datos: LoginRequest):
             "rol": perfil.data["roles"]["nombre"]
         }
     }
+
+
+class RegistroPacienteRequest(BaseModel):
+    email: str
+    password: str
+    nombre_completo: str
+    fecha_nacimiento: str
+    telefono: Optional[str] = None
+
+
+@router.post("/registro-paciente")
+def registro_paciente(datos: RegistroPacienteRequest):
+    """
+    Registro publico: cualquier persona puede crear su cuenta como Paciente.
+    El rol siempre es 4 (Paciente), sin excepcion, sin importar lo que se envie.
+    """
+    service = UsuarioService()
+    resultado = service.registrar_usuario(
+        email=datos.email,
+        password=datos.password,
+        nombre_completo=datos.nombre_completo,
+        rol_id=4,
+        datos_extra={
+            "fecha_nacimiento": datos.fecha_nacimiento,
+            "telefono": datos.telefono
+        }
+    )
+    return {"mensaje": "Registro exitoso. Ya puedes iniciar sesion.", "usuario": resultado}

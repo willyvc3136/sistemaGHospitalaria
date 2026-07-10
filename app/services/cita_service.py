@@ -18,24 +18,19 @@ class CitaService:
         self.paciente_repo = PacienteRepository()
         self.medico_repo = MedicoRepository()
 
-        # Configuracion del patron Observer: registramos los observadores
-        # que queremos que reaccionen a los eventos de citas.
         self.notificador = Sujeto()
         self.notificador.suscribir(LogNotificacionObserver())
         self.notificador.suscribir(ConsolaNotificacionObserver())
 
     def crear_cita(self, paciente_id: str, medico_id: str, fecha_hora, motivo: str, creado_por: str):
-        # Validar que el paciente existe
         paciente = self.paciente_repo.obtener_por_usuario_id(paciente_id)
         if not paciente:
             raise HTTPException(status_code=404, detail="Paciente no encontrado")
 
-        # Validar que el medico existe
         medico = self.medico_repo.obtener_por_usuario_id(medico_id)
         if not medico:
             raise HTTPException(status_code=404, detail="Medico no encontrado")
 
-        # Crear la cita con estado inicial
         datos_cita = {
             "paciente_id": paciente_id,
             "medico_id": medico_id,
@@ -46,7 +41,6 @@ class CitaService:
         }
         nueva_cita = self.cita_repo.crear(datos_cita)
 
-        # Patron Observer: notificar a todos los observadores registrados
         self.notificador.notificar("cita_creada", {
             "cita_id": nueva_cita.get("id") if nueva_cita else None,
             "paciente_id": paciente_id,
@@ -56,6 +50,24 @@ class CitaService:
         })
 
         return nueva_cita
+
+    def crear_cita_paciente(self, paciente_id: str, fecha_hora, motivo: str):
+        """
+        Un paciente reserva su propia cita de consulta general.
+        El sistema asigna automaticamente un medico de Medicina General;
+        Recepcion o Administracion pueden derivarla a un especialista despues.
+        """
+        medico_general = self.medico_repo.obtener_medico_general()
+        if not medico_general:
+            raise HTTPException(status_code=503, detail="No hay medicos de Medicina General disponibles por ahora")
+
+        return self.crear_cita(
+            paciente_id=paciente_id,
+            medico_id=medico_general["usuario_id"],
+            fecha_hora=fecha_hora,
+            motivo=motivo,
+            creado_por=paciente_id
+        )
 
     def listar_citas_de_paciente(self, paciente_id: str):
         return self.cita_repo.obtener_por_paciente(paciente_id)
