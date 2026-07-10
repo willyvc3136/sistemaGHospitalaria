@@ -1,5 +1,12 @@
 const API_URL = window.location.origin.replace('-3000', '-8000').replace(':3000', ':8000');
 
+const RUTAS_POR_ROL = {
+    'Administrador': 'admin.html',
+    'Médico': 'medico.html',
+    'Recepción': 'recepcion.html',
+    'Paciente': 'paciente.html'
+};
+
 document.getElementById('form-login').addEventListener('submit', async function (e) {
     e.preventDefault();
 
@@ -22,12 +29,19 @@ document.getElementById('form-login').addEventListener('submit', async function 
             return;
         }
 
-        // Guardamos el token y el usuario en el navegador (sessionStorage)
+        // Guardamos los datos de la sesion
         sessionStorage.setItem('access_token', datos.access_token);
         sessionStorage.setItem('usuario_email', datos.usuario.email);
+        sessionStorage.setItem('usuario_nombre', datos.usuario.nombre_completo);
+        sessionStorage.setItem('usuario_rol', datos.usuario.rol);
 
-        // Por ahora, solo confirmamos que funciono (luego redirigimos segun el rol)
-        alert('Login exitoso: ' + datos.usuario.email);
+        // Redirigimos segun el rol
+        const ruta = RUTAS_POR_ROL[datos.usuario.rol];
+        if (ruta) {
+            window.location.href = ruta;
+        } else {
+            mensajeError.textContent = 'Rol no reconocido';
+        }
 
     } catch (error) {
         mensajeError.textContent = 'Error de conexion con el servidor';
