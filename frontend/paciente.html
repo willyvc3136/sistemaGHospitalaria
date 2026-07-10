@@ -4,13 +4,22 @@
     <meta charset="UTF-8">
     <title>Mis Citas</title>
     <link rel="stylesheet" href="css/estilos.css">
+    <link rel="stylesheet" href="css/panel.css">
 </head>
 <body>
-    <div class="contenedor-login">
-        <h1>Bienvenido, Paciente</h1>
-        <p id="bienvenida"></p>
-        <button onclick="cerrarSesion()">Cerrar sesion</button>
+    <div class="contenedor-panel">
+        <div class="cabecera">
+            <h1>Mis Citas</h1>
+            <p id="bienvenida"></p>
+            <button onclick="cerrarSesion()">Cerrar sesion</button>
+        </div>
+
+        <div id="lista-citas">
+            <p>Cargando citas...</p>
+        </div>
     </div>
+
     <script src="js/comun.js"></script>
+    <script src="js/paciente.js"></script>
 </body>
 </html>

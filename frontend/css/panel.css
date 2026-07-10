@@ -1,0 +1,65 @@
+.contenedor-panel {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    width: 600px;
+    max-width: 90vw;
+    margin: 40px auto;
+}
+
+.cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.cabecera h1 {
+    font-size: 20px;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.cabecera button {
+    width: auto;
+    margin: 0;
+    padding: 8px 16px;
+}
+
+.tarjeta-cita {
+    background: #f7f9fc;
+    border-left: 4px solid #2c7be5;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+}
+
+.tarjeta-cita .fecha {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.tarjeta-cita .estado {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    color: white;
+    background-color: #f0ad4e;
+}
+
+.tarjeta-cita .estado.confirmada {
+    background-color: #5cb85c;
+}
+
+.tarjeta-cita .estado.cancelada {
+    background-color: #d9534f;
+}
+
+.tarjeta-cita .motivo {
+    margin-top: 6px;
+    color: #555;
+}
