@@ -2,19 +2,27 @@ from fastapi import HTTPException
 from app.repositories.cita_repository import CitaRepository
 from app.repositories.paciente_repository import PacienteRepository
 from app.repositories.medico_repository import MedicoRepository
+from app.observers.notificacion_observer import Sujeto, LogNotificacionObserver, ConsolaNotificacionObserver
 
 
 class CitaService:
     """
     Patron Facade: orquesta todo el proceso de negocio para gestionar citas,
     coordinando varios repositorios y aplicando reglas de validacion.
-    Quien use este servicio no necesita saber los detalles internos.
+    Tambien actua como 'Subject' del patron Observer, notificando
+    a los observadores registrados cuando ocurre un evento importante.
     """
 
     def __init__(self):
         self.cita_repo = CitaRepository()
         self.paciente_repo = PacienteRepository()
         self.medico_repo = MedicoRepository()
+
+        # Configuracion del patron Observer: registramos los observadores
+        # que queremos que reaccionen a los eventos de citas.
+        self.notificador = Sujeto()
+        self.notificador.suscribir(LogNotificacionObserver())
+        self.notificador.suscribir(ConsolaNotificacionObserver())
 
     def crear_cita(self, paciente_id: str, medico_id: str, fecha_hora, motivo: str, creado_por: str):
         # Validar que el paciente existe
@@ -38,7 +46,14 @@ class CitaService:
         }
         nueva_cita = self.cita_repo.crear(datos_cita)
 
-        # TODO: aqui se disparara la notificacion (patron Observer) en un paso futuro
+        # Patron Observer: notificar a todos los observadores registrados
+        self.notificador.notificar("cita_creada", {
+            "cita_id": nueva_cita.get("id") if nueva_cita else None,
+            "paciente_id": paciente_id,
+            "medico_id": medico_id,
+            "fecha_hora": fecha_hora.isoformat(),
+            "motivo": motivo
+        })
 
         return nueva_cita
 
