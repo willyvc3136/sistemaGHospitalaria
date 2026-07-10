@@ -2,15 +2,24 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Panel Medico</title>
+    <title>Mi Agenda</title>
     <link rel="stylesheet" href="css/estilos.css">
+    <link rel="stylesheet" href="css/panel.css">
 </head>
 <body>
-    <div class="contenedor-login">
-        <h1>Panel de Medico</h1>
-        <p id="bienvenida"></p>
-        <button onclick="cerrarSesion()">Cerrar sesion</button>
+    <div class="contenedor-panel">
+        <div class="cabecera">
+            <h1>Mi Agenda</h1>
+            <p id="bienvenida"></p>
+            <button onclick="cerrarSesion()">Cerrar sesion</button>
+        </div>
+
+        <div id="lista-citas">
+            <p>Cargando agenda...</p>
+        </div>
     </div>
+
     <script src="js/comun.js"></script>
+    <script src="js/medico.js"></script>
 </body>
 </html>
