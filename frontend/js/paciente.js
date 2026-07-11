@@ -17,15 +17,25 @@ async function cargarCitas() {
         }
 
         if (datos.citas.length === 0) {
-            contenedor.innerHTML = '<p>No tienes citas programadas.</p>';
+            contenedor.innerHTML = `
+                <div class="estado-vacio">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                    <p>Aún no tienes citas. Reserva la primera arriba.</p>
+                </div>
+            `;
             return;
         }
 
         contenedor.innerHTML = datos.citas.map(cita => `
-            <div class="tarjeta-cita">
-                <div class="fecha">${formatearFecha(cita.fecha_hora)}</div>
-                <span class="estado ${cita.estado}">${cita.estado}</span>
-                <div class="motivo">${cita.motivo || 'Sin motivo especificado'}</div>
+            <div class="tarjeta-cita-v2">
+                <div class="tarjeta-cita-v2-icono">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+                </div>
+                <div class="tarjeta-cita-v2-info">
+                    <div class="tarjeta-cita-v2-fecha">${formatearFecha(cita.fecha_hora)}</div>
+                    <div class="tarjeta-cita-v2-motivo">${cita.motivo || 'Sin motivo especificado'}</div>
+                </div>
+                <span class="badge-estado ${cita.estado}">${cita.estado}</span>
             </div>
         `).join('');
 
@@ -62,18 +72,18 @@ document.getElementById('form-reservar').addEventListener('submit', async functi
 
         if (!respuesta.ok) {
             mensaje.textContent = 'Error: ' + (datos.detail || 'No se pudo reservar la cita');
-            mensaje.style.color = '#d9534f';
+            mensaje.style.color = '#C94A2C';
             return;
         }
 
         mensaje.textContent = 'Cita reservada exitosamente';
-        mensaje.style.color = '#5cb85c';
+        mensaje.style.color = '#2F7A4D';
         document.getElementById('form-reservar').reset();
         cargarCitas();
 
     } catch (error) {
         mensaje.textContent = 'Error de conexion con el servidor';
-        mensaje.style.color = '#d9534f';
+        mensaje.style.color = '#C94A2C';
         console.error(error);
     }
 });

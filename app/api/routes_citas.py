@@ -15,9 +15,6 @@ def crear_cita(
     datos: CitaCreate,
     usuario_actual: dict = Depends(requiere_rol("Recepción", "Administrador"))
 ):
-    """
-    Crea una nueva cita, con medico especifico. Solo Recepcion o Administrador.
-    """
     service = CitaService()
     nueva_cita = service.crear_cita(
         paciente_id=str(datos.paciente_id),
@@ -39,10 +36,6 @@ def reservar_cita_propia(
     datos: CitaPacienteRequest,
     usuario_actual: dict = Depends(requiere_rol("Paciente"))
 ):
-    """
-    El paciente reserva su propia cita de consulta general.
-    Se asigna automaticamente a un medico de Medicina General.
-    """
     service = CitaService()
     nueva_cita = service.crear_cita_paciente(
         paciente_id=usuario_actual["id"],
@@ -50,6 +43,19 @@ def reservar_cita_propia(
         motivo=datos.motivo
     )
     return {"mensaje": "Cita reservada exitosamente", "cita": nueva_cita}
+
+
+@router.post("/{cita_id}/cancelar")
+def cancelar_cita(
+    cita_id: int,
+    usuario_actual: dict = Depends(requiere_rol("Paciente"))
+):
+    """
+    El paciente cancela una de sus propias citas, si esta pendiente.
+    """
+    service = CitaService()
+    cita_actualizada = service.cancelar_cita_paciente(usuario_actual["id"], cita_id)
+    return {"mensaje": "Cita cancelada exitosamente", "cita": cita_actualizada}
 
 
 @router.get("/mis-citas")
