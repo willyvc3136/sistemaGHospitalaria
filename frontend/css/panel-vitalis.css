@@ -297,13 +297,16 @@ body {
     gap: 8px;
 }
 
+.sidebar-sticky {
+    position: sticky;
+    top: 24px;
+}
+
 .sidebar-campania {
     background: var(--verde-profundo);
     border-radius: 16px;
     padding: 26px 22px;
     color: white;
-    position: sticky;
-    top: 24px;
 }
 
 .sidebar-campania-badge {

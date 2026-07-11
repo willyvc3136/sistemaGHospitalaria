@@ -25,68 +25,38 @@
         <div class="panel-grid">
             <div class="panel-principal">
 
-                <div class="tarjeta-reserva">
-                    <div class="tarjeta-reserva-titulo">
-                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-                        <h2>Registrar nueva cita</h2>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <div class="filtro-estado" style="margin-bottom:0;">
+                        <button class="filtro-boton activo" data-tab="agenda" onclick="cambiarTab('agenda', this)">Agenda del día</button>
+                        <button class="filtro-boton" data-tab="pacientes" onclick="cambiarTab('pacientes', this)">Directorio de pacientes</button>
                     </div>
-                    <form id="form-cita">
-                        <label for="paciente_busqueda">Paciente</label>
-                        <div style="display:flex; gap:8px; align-items:flex-start;">
-                        <div class="autocompletar-contenedor" style="flex:1;">
-                            <input type="text" id="paciente_busqueda" placeholder="Escribe el nombre del paciente..." autocomplete="off" required>
-                            <input type="hidden" id="paciente" required>
-                            <div class="autocompletar-lista" id="autocompletar-lista"></div>
-                        </div>
-                        <button type="button" class="boton-secundario" style="white-space:nowrap; padding:11px 14px; margin-top:0;" onclick="abrirModalPaciente()">+ Nuevo</button>
-                        </div>
-
-                        <label for="medico">Médico</label>
-                        <select id="medico" required>
-                            <option value="">Cargando...</option>
-                        </select>
-
-                        <div class="fila-horario">
-                            <div>
-                                <label for="fecha">Fecha</label>
-                                <input type="date" id="fecha" required>
-                            </div>
-                            <div>
-                                <label for="hora">Hora</label>
-                                <select id="hora" required>
-                                    <option value="">Selecciona</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <label for="motivo">Motivo</label>
-                        <input type="text" id="motivo" placeholder="Ej: Consulta general">
-
-                        <button type="submit" class="boton-primario" style="width:100%; margin-top:18px;">Crear cita</button>
-                    </form>
-                    <p id="mensaje-resultado"></p>
+                    <button class="boton-primario" onclick="abrirModalCita()">+ Nueva cita</button>
                 </div>
 
-                <div class="seccion-historial-titulo">
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M8 8V6a4 4 0 0 1 8 0v2"/></svg>
-                    <h2>Agenda del día</h2>
+                <div id="tab-agenda">
+                    <div class="filtro-estado">
+                        <button class="filtro-boton activo" data-filtro="todas" onclick="filtrarAgenda('todas', this)">Todas</button>
+                        <button class="filtro-boton" data-filtro="pendiente" onclick="filtrarAgenda('pendiente', this)">Pendientes</button>
+                        <button class="filtro-boton" data-filtro="confirmada" onclick="filtrarAgenda('confirmada', this)">Confirmadas</button>
+                    </div>
+                    <div class="lista-agenda-scroll">
+                        <div id="lista-agenda">
+                            <p>Cargando agenda...</p>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="filtro-estado">
-                    <button class="filtro-boton activo" data-filtro="todas" onclick="filtrarAgenda('todas', this)">Todas</button>
-                    <button class="filtro-boton" data-filtro="pendiente" onclick="filtrarAgenda('pendiente', this)">Pendientes</button>
-                    <button class="filtro-boton" data-filtro="confirmada" onclick="filtrarAgenda('confirmada', this)">Confirmadas</button>
-                </div>
-
-                <div class="lista-agenda-scroll">
-                    <div id="lista-agenda">
-                        <p>Cargando agenda...</p>
+                <div id="tab-pacientes" style="display:none;">
+                    <div class="lista-agenda-scroll">
+                        <div id="lista-pacientes-directorio">
+                            <p>Cargando pacientes...</p>
+                        </div>
                     </div>
                 </div>
 
             </div>
 
-            <aside>
+            <aside class="sidebar-sticky">
                 <div class="sidebar-campania">
                     <span class="sidebar-campania-badge">Campaña activa</span>
                     <h3>Semana de la salud preventiva</h3>
@@ -106,6 +76,51 @@
             </aside>
         </div>
     </main>
+
+    <div class="modal-fondo" id="modal-cita">
+        <div class="modal-caja">
+            <h3>Registrar nueva cita</h3>
+            <form id="form-cita">
+                <label for="paciente_busqueda">Paciente</label>
+                <div style="display:flex; gap:8px; align-items:flex-start;">
+                    <div class="autocompletar-contenedor" style="flex:1;">
+                        <input type="text" id="paciente_busqueda" placeholder="Escribe el nombre del paciente..." autocomplete="off" required>
+                        <input type="hidden" id="paciente" required>
+                        <div class="autocompletar-lista" id="autocompletar-lista"></div>
+                    </div>
+                    <button type="button" class="boton-secundario" style="white-space:nowrap; padding:11px 14px; margin-top:0;" onclick="abrirModalPaciente()">+ Nuevo</button>
+                </div>
+
+                <label for="medico">Médico</label>
+                <select id="medico" required>
+                    <option value="">Cargando...</option>
+                </select>
+
+                <div class="fila-horario">
+                    <div>
+                        <label for="fecha">Fecha</label>
+                        <input type="date" id="fecha" required>
+                    </div>
+                    <div>
+                        <label for="hora">Hora</label>
+                        <select id="hora" required>
+                            <option value="">Selecciona</option>
+                        </select>
+                    </div>
+                </div>
+
+                <label for="motivo">Motivo</label>
+                <input type="text" id="motivo" placeholder="Ej: Consulta general">
+
+                <p id="mensaje-resultado"></p>
+
+                <div class="modal-botones">
+                    <button type="submit" class="boton-primario" style="flex:1;">Crear cita</button>
+                    <button type="button" class="boton-cerrar-modal" onclick="cerrarModalCita()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <div class="modal-fondo" id="modal-nuevo-paciente">
         <div class="modal-caja">

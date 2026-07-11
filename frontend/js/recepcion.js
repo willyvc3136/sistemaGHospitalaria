@@ -315,3 +315,64 @@ document.getElementById('form-nuevo-paciente').addEventListener('submit', async 
         console.error(error);
     }
 });
+
+function cambiarTab(tab, boton) {
+    document.querySelectorAll('[data-tab]').forEach(b => b.classList.remove('activo'));
+    boton.classList.add('activo');
+
+    document.getElementById('tab-agenda').style.display = tab === 'agenda' ? 'block' : 'none';
+    document.getElementById('tab-pacientes').style.display = tab === 'pacientes' ? 'block' : 'none';
+
+    if (tab === 'pacientes') {
+        cargarDirectorioPacientes();
+    }
+}
+
+async function cargarDirectorioPacientes() {
+    const contenedor = document.getElementById('lista-pacientes-directorio');
+    const authToken = sessionStorage.getItem('access_token');
+
+    try {
+        const respuesta = await fetch(`${API_URL}/citas/directorio-pacientes`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok) {
+            contenedor.innerHTML = `<p>Error: ${datos.detail}</p>`;
+            return;
+        }
+
+        if (datos.pacientes.length === 0) {
+            contenedor.innerHTML = '<p>No hay pacientes registrados.</p>';
+            return;
+        }
+
+        contenedor.innerHTML = datos.pacientes.map(p => `
+            <div class="tarjeta-cita-v2">
+                <div class="tarjeta-cita-v2-icono">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>
+                </div>
+                <div class="tarjeta-cita-v2-info">
+                    <div class="tarjeta-cita-v2-fecha">${p.profiles.nombre_completo}</div>
+                    <div class="tarjeta-cita-v2-motivo">${p.profiles.email} ${p.telefono ? '— ' + p.telefono : ''}</div>
+                    <div class="tarjeta-cita-v2-motivo">Historial: ${p.historial_clinico_nro || '-'}</div>
+                </div>
+            </div>
+        `).join('');
+
+    } catch (error) {
+        contenedor.innerHTML = '<p>Error de conexion con el servidor.</p>';
+        console.error(error);
+    }
+}
+
+function abrirModalCita() {
+    document.getElementById('modal-cita').classList.add('activo');
+}
+
+function cerrarModalCita() {
+    document.getElementById('form-cita').reset();
+    document.getElementById('mensaje-resultado').textContent = '';
+    document.getElementById('modal-cita').classList.remove('activo');
+}
