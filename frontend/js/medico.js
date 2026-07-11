@@ -46,6 +46,7 @@ async function cargarAgenda() {
                 <div class="tarjeta-cita-v2-acciones">
                     <span class="badge-estado ${cita.estado}">${cita.estado}</span>
                     <div class="acciones-cita">
+                        <button class="boton-cerrar-modal" style="padding:6px 12px; font-size:12.5px;" onclick="verHistorial('${cita.paciente_id}', '${cita.paciente_nombre || 'Paciente'}')">Ver historial</button>
                         ${cita.estado === 'pendiente' ? `
                             <button class="boton-confirmar" onclick="confirmarCita(${cita.id})">Confirmar</button>
                             <button class="boton-cancelar" onclick="cancelarCitaMedico(${cita.id})">Cancelar</button>
@@ -153,6 +154,55 @@ document.getElementById('form-atender').addEventListener('submit', async functio
 function formatearFecha(fechaISO) {
     const fecha = new Date(fechaISO);
     return fecha.toLocaleString('es-PE', { dateStyle: 'long', timeStyle: 'short' });
+}
+
+
+async function verHistorial(pacienteId, nombrePaciente) {
+    document.getElementById('historial-titulo').textContent = `Historial de ${nombrePaciente}`;
+    document.getElementById('historial-contenido').innerHTML = '<p>Cargando...</p>';
+    document.getElementById('modal-historial').classList.add('activo');
+
+    const authToken = sessionStorage.getItem('access_token');
+    try {
+        const respuesta = await fetch(`${API_URL}/citas/historial-paciente/${pacienteId}`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok) {
+            document.getElementById('historial-contenido').innerHTML = `<p>Error: ${datos.detail}</p>`;
+            return;
+        }
+
+        if (datos.citas.length === 0) {
+            document.getElementById('historial-contenido').innerHTML = '<p>Sin citas previas registradas.</p>';
+            return;
+        }
+
+        document.getElementById('historial-contenido').innerHTML = datos.citas.map(cita => `
+            <div class="tarjeta-cita-v2" style="margin-bottom:10px;">
+                <div class="tarjeta-cita-v2-info">
+                    <div class="tarjeta-cita-v2-fecha">${formatearFecha(cita.fecha_hora)}</div>
+                    <div class="tarjeta-cita-v2-motivo">${cita.motivo || 'Sin motivo'}</div>
+                    ${cita.estado === 'atendida' ? `
+                        <div class="info-atendida">
+                            <strong>Diagnóstico:</strong> ${cita.diagnostico || '-'}<br>
+                            <strong>Receta:</strong> ${cita.receta || '-'}
+                        </div>
+                    ` : ''}
+                </div>
+                <span class="badge-estado ${cita.estado}">${cita.estado}</span>
+            </div>
+        `).join('');
+
+    } catch (error) {
+        document.getElementById('historial-contenido').innerHTML = '<p>Error de conexion con el servidor.</p>';
+        console.error(error);
+    }
+}
+
+function cerrarModalHistorial() {
+    document.getElementById('modal-historial').classList.remove('activo');
 }
 
 document.addEventListener('DOMContentLoaded', cargarAgenda);

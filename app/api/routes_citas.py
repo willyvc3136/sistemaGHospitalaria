@@ -129,3 +129,17 @@ def lista_medicos(usuario_actual: dict = Depends(requiere_rol("Recepción", "Adm
     db = get_db()
     resultado = db.table("medicos").select("usuario_id, especialidad, profiles(nombre_completo)").execute()
     return {"medicos": resultado.data}
+
+
+@router.get("/historial-paciente/{paciente_id}")
+def historial_paciente(
+    paciente_id: str,
+    usuario_actual: dict = Depends(requiere_rol("Médico", "Administrador"))
+):
+    """
+    Retorna todas las citas pasadas de un paciente especifico,
+    para que el medico tenga contexto antes de atenderlo.
+    """
+    service = CitaService()
+    citas = service.listar_citas_de_paciente(paciente_id)
+    return {"citas": citas}
