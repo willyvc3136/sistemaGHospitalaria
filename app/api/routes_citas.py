@@ -240,3 +240,14 @@ def buscar_pacientes(
     db = get_db()
     resultado = db.table("profiles").select("id, nombre_completo").eq("rol_id", 4).ilike("nombre_completo", f"%{q}%").limit(8).execute()
     return {"pacientes": [{"usuario_id": p["id"], "nombre_completo": p["nombre_completo"]} for p in resultado.data]}
+
+
+@router.get("/directorio-pacientes")
+def directorio_pacientes(usuario_actual: dict = Depends(requiere_rol("Recepción", "Administrador"))):
+    """
+    Lista completa de pacientes con sus datos de contacto,
+    para consulta rapida desde Recepcion.
+    """
+    db = get_db()
+    resultado = db.table("pacientes").select("usuario_id, fecha_nacimiento, telefono, historial_clinico_nro, profiles(nombre_completo, email)").execute()
+    return {"pacientes": resultado.data}
