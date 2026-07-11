@@ -223,3 +223,20 @@ def derivar_cita(
 
     resultado = db.table("citas").update({"medico_id": datos.nuevo_medico_id}).eq("id", cita_id).execute()
     return {"mensaje": "Cita derivada exitosamente", "cita": resultado.data[0]}
+
+
+@router.get("/buscar-pacientes")
+def buscar_pacientes(
+    q: str = "",
+    usuario_actual: dict = Depends(requiere_rol("Recepción", "Administrador"))
+):
+    """
+    Busca pacientes por nombre (coincidencia parcial), para autocompletado.
+    Retorna maximo 8 resultados para no sobrecargar la interfaz.
+    """
+    if len(q.strip()) < 2:
+        return {"pacientes": []}
+
+    db = get_db()
+    resultado = db.table("profiles").select("id, nombre_completo").eq("rol_id", 4).ilike("nombre_completo", f"%{q}%").limit(8).execute()
+    return {"pacientes": [{"usuario_id": p["id"], "nombre_completo": p["nombre_completo"]} for p in resultado.data]}

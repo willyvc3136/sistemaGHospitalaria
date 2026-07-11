@@ -516,3 +516,36 @@ body {
 .info-atendida strong {
     color: var(--texto-oscuro);
 }
+
+.filtro-estado {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+}
+
+.filtro-boton {
+    background: white;
+    border: 1px solid var(--borde);
+    color: var(--texto-suave);
+    padding: 7px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.filtro-boton.activo {
+    background-color: var(--verde-profundo);
+    color: white;
+    border-color: var(--verde-profundo);
+}
+
+.select-derivar {
+    padding: 5px 8px;
+    border: 1px solid var(--borde);
+    border-radius: 7px;
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
+    max-width: 140px;
+}
