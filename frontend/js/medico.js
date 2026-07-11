@@ -69,6 +69,11 @@ function actualizarResumen(citas) {
     document.getElementById('contador-total').textContent = citas.length;
     document.getElementById('contador-pendientes').textContent = citas.filter(c => c.estado === 'pendiente').length;
     document.getElementById('contador-confirmadas').textContent = citas.filter(c => c.estado === 'confirmada').length;
+
+    const atendidas = citas.filter(c => c.estado === 'atendida').length;
+    const porConfirmar = citas.filter(c => c.estado === 'pendiente').length;
+    document.getElementById('stat-atendidas').textContent = atendidas;
+    document.getElementById('stat-pendientes').textContent = porConfirmar;
 }
 
 async function confirmarCita(citaId) {

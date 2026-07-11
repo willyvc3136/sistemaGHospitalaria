@@ -21,28 +21,66 @@
         </div>
     </header>
 
-    <main class="panel-cuerpo" style="max-width:760px;">
-        <div class="resumen-dia">
-            <div class="resumen-item">
-                <div class="numero" id="contador-total">-</div>
-                <div class="etiqueta">Total de citas</div>
-            </div>
-            <div class="resumen-item">
-                <div class="numero" id="contador-pendientes">-</div>
-                <div class="etiqueta">Por confirmar</div>
-            </div>
-            <div class="resumen-item">
-                <div class="numero" id="contador-confirmadas">-</div>
-                <div class="etiqueta">Confirmadas</div>
-            </div>
-        </div>
+    <main class="panel-cuerpo" style="max-width:1040px;">
+        <div class="panel-grid">
+            <div class="panel-principal">
 
-        <div class="seccion-historial-titulo">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.5-1.5 2-3 2-5a5 5 0 0 0-10 0c0 2 .5 3.5 2 5"/><circle cx="12" cy="18" r="4"/></svg>
-            <h2>Mi agenda</h2>
-        </div>
-        <div id="lista-citas">
-            <p>Cargando agenda...</p>
+                <div class="resumen-dia">
+                    <div class="resumen-item">
+                        <div class="numero" id="contador-total">-</div>
+                        <div class="etiqueta">Total de citas</div>
+                    </div>
+                    <div class="resumen-item">
+                        <div class="numero" id="contador-pendientes">-</div>
+                        <div class="etiqueta">Por confirmar</div>
+                    </div>
+                    <div class="resumen-item">
+                        <div class="numero" id="contador-confirmadas">-</div>
+                        <div class="etiqueta">Confirmadas</div>
+                    </div>
+                </div>
+
+                <div class="seccion-historial-titulo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.5-1.5 2-3 2-5a5 5 0 0 0-10 0c0 2 .5 3.5 2 5"/><circle cx="12" cy="18" r="4"/></svg>
+                    <h2>Mi agenda</h2>
+                </div>
+                <div id="lista-citas">
+                    <p>Cargando agenda...</p>
+                </div>
+
+            </div>
+
+            <aside>
+                <div class="sidebar-campania">
+                    <span class="sidebar-campania-badge">Institucional</span>
+                    <h3>Protocolo de bioseguridad actualizado</h3>
+                    <p>Revisa las nuevas pautas de atención antes de tu siguiente turno.</p>
+                </div>
+
+                <div class="sidebar-info">
+                    <h4>Tu semana</h4>
+                    <div class="sidebar-info-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                        <span id="stat-atendidas">0</span> consultas atendidas
+                    </div>
+                    <div class="sidebar-info-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+                        <span id="stat-pendientes">0</span> citas por confirmar
+                    </div>
+                </div>
+
+                <div class="sidebar-info">
+                    <h4>Recordatorios</h4>
+                    <div class="sidebar-info-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
+                        Actualiza tu disponibilidad semanal
+                    </div>
+                    <div class="sidebar-info-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg>
+                        Capacitación de bioseguridad pendiente
+                    </div>
+                </div>
+            </aside>
         </div>
     </main>
 
