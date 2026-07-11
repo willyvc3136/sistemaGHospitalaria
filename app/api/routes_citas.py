@@ -251,3 +251,22 @@ def directorio_pacientes(usuario_actual: dict = Depends(requiere_rol("Recepción
     db = get_db()
     resultado = db.table("pacientes").select("usuario_id, fecha_nacimiento, telefono, historial_clinico_nro, profiles(nombre_completo, email)").execute()
     return {"pacientes": resultado.data}
+
+
+@router.post("/{cita_id}/cobrar")
+def cobrar_cita(
+    cita_id: int,
+    usuario_actual: dict = Depends(requiere_rol("Recepción", "Administrador"))
+):
+    """
+    Marca una cita como pagada.
+    """
+    db = get_db()
+    cita = db.table("citas").select("*").eq("id", cita_id).single().execute()
+    if not cita.data:
+        raise HTTPException(status_code=404, detail="Cita no encontrada")
+    if cita.data["pagado"]:
+        raise HTTPException(status_code=400, detail="Esta cita ya fue pagada")
+
+    resultado = db.table("citas").update({"pagado": True}).eq("id", cita_id).execute()
+    return {"mensaje": "Pago registrado exitosamente", "cita": resultado.data[0]}
