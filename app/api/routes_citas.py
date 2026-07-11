@@ -270,3 +270,21 @@ def cobrar_cita(
 
     resultado = db.table("citas").update({"pagado": True}).eq("id", cita_id).execute()
     return {"mensaje": "Pago registrado exitosamente", "cita": resultado.data[0]}
+
+
+@router.get("/historial-basico/{paciente_id}")
+def historial_basico_paciente(
+    paciente_id: str,
+    usuario_actual: dict = Depends(requiere_rol("Recepción", "Administrador"))
+):
+    """
+    Retorna el historial de citas de un paciente SIN informacion clinica
+    sensible (diagnostico, receta). Pensado para uso administrativo/Recepcion.
+    """
+    service = CitaService()
+    citas = service.listar_citas_de_paciente(paciente_id)
+    citas_filtradas = [
+        {k: v for k, v in cita.items() if k not in ("diagnostico", "receta")}
+        for cita in citas
+    ]
+    return {"citas": citas_filtradas}

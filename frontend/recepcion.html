@@ -47,6 +47,13 @@
                 </div>
 
                 <div id="tab-pacientes" style="display:none;">
+                    <div style="display:flex; gap:10px; margin-bottom:16px;">
+                        <input type="text" id="buscador-directorio" placeholder="Buscar por nombre..." style="flex:1; padding:10px 12px; border:1px solid var(--borde); border-radius:8px; font-size:14px;">
+                        <select id="orden-directorio" style="padding:10px 12px; border:1px solid var(--borde); border-radius:8px; font-size:14px;">
+                            <option value="az">Nombre A-Z</option>
+                            <option value="za">Nombre Z-A</option>
+                        </select>
+                    </div>
                     <div class="lista-agenda-scroll">
                         <div id="lista-pacientes-directorio">
                             <p>Cargando pacientes...</p>
@@ -148,6 +155,18 @@
                     <button type="button" class="boton-cerrar-modal" onclick="cerrarModalPaciente()">Cancelar</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <div class="modal-fondo" id="modal-historial-recepcion">
+        <div class="modal-caja" style="width:520px; max-height:80vh; overflow-y:auto;">
+            <h3 id="historial-recepcion-titulo">Historial del paciente</h3>
+            <div id="historial-recepcion-contenido">
+                <p>Cargando...</p>
+            </div>
+            <div class="modal-botones">
+                <button type="button" class="boton-cerrar-modal" style="flex:1;" onclick="cerrarModalHistorialRecepcion()">Cerrar</button>
+            </div>
         </div>
     </div>
 
