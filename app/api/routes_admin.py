@@ -59,3 +59,58 @@ def crear_usuario(
         datos_extra=datos_extra
     )
     return {"mensaje": "Usuario registrado exitosamente", "usuario": resultado}
+
+
+class ActualizarUsuarioRequest(BaseModel):
+    nombre_completo: Optional[str] = None
+    activo: Optional[bool] = None
+
+
+@router.patch("/usuarios/{usuario_id}")
+def actualizar_usuario(
+    usuario_id: str,
+    datos: ActualizarUsuarioRequest,
+    usuario_actual: dict = Depends(requiere_rol("Administrador"))
+):
+    """
+    Permite al Administrador editar el nombre o activar/desactivar un usuario.
+    """
+    db = get_db()
+    cambios = {k: v for k, v in datos.dict().items() if v is not None}
+
+    if not cambios:
+        raise HTTPException(status_code=400, detail="No se enviaron cambios")
+
+    resultado = db.table("profiles").update(cambios).eq("id", usuario_id).execute()
+    if not resultado.data:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    return {"mensaje": "Usuario actualizado exitosamente", "usuario": resultado.data[0]}
+
+
+@router.get("/estadisticas")
+def estadisticas_generales(usuario_actual: dict = Depends(requiere_rol("Administrador"))):
+    """
+    Retorna metricas generales del sistema para el dashboard.
+    """
+    db = get_db()
+
+    usuarios = db.table("profiles").select("id, rol_id, activo").execute()
+    citas = db.table("citas").select("id, estado, monto, pagado").execute()
+
+    total_usuarios = len(usuarios.data)
+    total_pacientes = len([u for u in usuarios.data if u["rol_id"] == 4])
+    total_medicos = len([u for u in usuarios.data if u["rol_id"] == 2])
+
+    total_citas = len(citas.data)
+    citas_atendidas = len([c for c in citas.data if c["estado"] == "atendida"])
+    ingresos_totales = sum(c["monto"] for c in citas.data if c["pagado"])
+
+    return {
+        "total_usuarios": total_usuarios,
+        "total_pacientes": total_pacientes,
+        "total_medicos": total_medicos,
+        "total_citas": total_citas,
+        "citas_atendidas": citas_atendidas,
+        "ingresos_totales": round(ingresos_totales, 2)
+    }
