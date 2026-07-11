@@ -1,0 +1,95 @@
+.pagina-login {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--fondo);
+}
+
+.login-tarjeta {
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+    border: 1px solid var(--borde);
+    width: 380px;
+    max-width: 90vw;
+}
+
+.login-marca {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--verde-profundo);
+    margin-bottom: 28px;
+}
+
+.login-tarjeta h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--verde-profundo);
+    margin-bottom: 4px;
+}
+
+.login-subtitulo {
+    font-size: 14px;
+    color: var(--texto-suave);
+    margin-bottom: 24px;
+}
+
+.login-tarjeta label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--texto-suave);
+    margin-top: 14px;
+    margin-bottom: 6px;
+}
+
+.login-tarjeta input {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+}
+
+.login-tarjeta input:focus {
+    outline: none;
+    border-color: var(--verde-profundo);
+}
+
+#mensaje-error {
+    color: #C94A2C;
+    text-align: center;
+    margin-top: 14px;
+    font-size: 13px;
+}
+
+.login-registro {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: var(--texto-suave);
+}
+
+.login-registro a {
+    color: var(--coral);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.login-volver {
+    text-align: center;
+    margin-top: 12px;
+}
+
+.login-volver a {
+    color: var(--texto-suave);
+    font-size: 13px;
+    text-decoration: none;
+}
