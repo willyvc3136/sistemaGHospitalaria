@@ -32,10 +32,13 @@
                     </div>
                     <form id="form-cita">
                         <label for="paciente_busqueda">Paciente</label>
-                        <div class="autocompletar-contenedor">
+                        <div style="display:flex; gap:8px; align-items:flex-start;">
+                        <div class="autocompletar-contenedor" style="flex:1;">
                             <input type="text" id="paciente_busqueda" placeholder="Escribe el nombre del paciente..." autocomplete="off" required>
                             <input type="hidden" id="paciente" required>
                             <div class="autocompletar-lista" id="autocompletar-lista"></div>
+                        </div>
+                        <button type="button" class="boton-secundario" style="white-space:nowrap; padding:11px 14px; margin-top:0;" onclick="abrirModalPaciente()">+ Nuevo</button>
                         </div>
 
                         <label for="medico">Médico</label>
@@ -103,6 +106,35 @@
             </aside>
         </div>
     </main>
+
+    <div class="modal-fondo" id="modal-nuevo-paciente">
+        <div class="modal-caja">
+            <h3>Registrar paciente nuevo</h3>
+            <form id="form-nuevo-paciente">
+                <label for="np_nombre">Nombre completo</label>
+                <input type="text" id="np_nombre" required style="width:100%; padding:10px 12px; border:1px solid var(--borde); border-radius:8px; font-size:14px;">
+
+                <label for="np_email">Correo electrónico</label>
+                <input type="email" id="np_email" required style="width:100%; padding:10px 12px; border:1px solid var(--borde); border-radius:8px; font-size:14px;">
+
+                <label for="np_password">Contraseña temporal</label>
+                <input type="text" id="np_password" required style="width:100%; padding:10px 12px; border:1px solid var(--borde); border-radius:8px; font-size:14px;">
+
+                <label for="np_fecha_nacimiento">Fecha de nacimiento</label>
+                <input type="date" id="np_fecha_nacimiento" required style="width:100%; padding:10px 12px; border:1px solid var(--borde); border-radius:8px; font-size:14px;">
+
+                <label for="np_telefono">Teléfono</label>
+                <input type="text" id="np_telefono" style="width:100%; padding:10px 12px; border:1px solid var(--borde); border-radius:8px; font-size:14px;">
+
+                <p id="np_mensaje" style="font-size:13px; margin-top:10px;"></p>
+
+                <div class="modal-botones">
+                    <button type="submit" class="boton-primario" style="flex:1;">Registrar</button>
+                    <button type="button" class="boton-cerrar-modal" onclick="cerrarModalPaciente()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script src="js/comun.js"></script>
     <script src="js/recepcion.js"></script>

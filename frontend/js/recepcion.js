@@ -264,3 +264,54 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarAgenda();
     inicializarAutocompletado();
 });
+
+function abrirModalPaciente() {
+    document.getElementById('modal-nuevo-paciente').classList.add('activo');
+}
+
+function cerrarModalPaciente() {
+    document.getElementById('form-nuevo-paciente').reset();
+    document.getElementById('np_mensaje').textContent = '';
+    document.getElementById('modal-nuevo-paciente').classList.remove('activo');
+}
+
+document.getElementById('form-nuevo-paciente').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const mensaje = document.getElementById('np_mensaje');
+    mensaje.textContent = '';
+
+    const cuerpo = {
+        nombre_completo: document.getElementById('np_nombre').value,
+        email: document.getElementById('np_email').value,
+        password: document.getElementById('np_password').value,
+        fecha_nacimiento: document.getElementById('np_fecha_nacimiento').value,
+        telefono: document.getElementById('np_telefono').value || null
+    };
+
+    try {
+        const respuesta = await fetch(`${API_URL}/auth/registro-paciente`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(cuerpo)
+        });
+
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok) {
+            mensaje.textContent = 'Error: ' + (datos.detail || 'No se pudo registrar');
+            mensaje.style.color = '#C94A2C';
+            return;
+        }
+
+        document.getElementById('paciente_busqueda').value = cuerpo.nombre_completo;
+        document.getElementById('paciente').value = datos.usuario.id;
+
+        cerrarModalPaciente();
+
+    } catch (error) {
+        mensaje.textContent = 'Error de conexion con el servidor';
+        mensaje.style.color = '#C94A2C';
+        console.error(error);
+    }
+});
