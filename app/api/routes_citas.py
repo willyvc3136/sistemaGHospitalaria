@@ -50,12 +50,57 @@ def cancelar_cita(
     cita_id: int,
     usuario_actual: dict = Depends(requiere_rol("Paciente"))
 ):
-    """
-    El paciente cancela una de sus propias citas, si esta pendiente.
-    """
     service = CitaService()
     cita_actualizada = service.cancelar_cita_paciente(usuario_actual["id"], cita_id)
     return {"mensaje": "Cita cancelada exitosamente", "cita": cita_actualizada}
+
+
+@router.post("/{cita_id}/confirmar")
+def confirmar_cita(
+    cita_id: int,
+    usuario_actual: dict = Depends(requiere_rol("Médico"))
+):
+    """
+    El medico confirma una cita que le fue asignada.
+    """
+    service = CitaService()
+    cita_actualizada = service.confirmar_cita(usuario_actual["id"], cita_id)
+    return {"mensaje": "Cita confirmada", "cita": cita_actualizada}
+
+
+@router.post("/{cita_id}/cancelar-medico")
+def cancelar_cita_medico(
+    cita_id: int,
+    usuario_actual: dict = Depends(requiere_rol("Médico"))
+):
+    """
+    El medico cancela una cita que le fue asignada.
+    """
+    service = CitaService()
+    cita_actualizada = service.cancelar_cita_medico(usuario_actual["id"], cita_id)
+    return {"mensaje": "Cita cancelada", "cita": cita_actualizada}
+
+
+class AtenderCitaRequest(BaseModel):
+    diagnostico: str
+    receta: Optional[str] = None
+
+
+@router.post("/{cita_id}/atender")
+def atender_cita(
+    cita_id: int,
+    datos: AtenderCitaRequest,
+    usuario_actual: dict = Depends(requiere_rol("Médico"))
+):
+    """
+    El medico marca una cita confirmada como atendida,
+    registrando diagnostico y receta.
+    """
+    service = CitaService()
+    cita_actualizada = service.atender_cita(
+        usuario_actual["id"], cita_id, datos.diagnostico, datos.receta
+    )
+    return {"mensaje": "Cita marcada como atendida", "cita": cita_actualizada}
 
 
 @router.get("/mis-citas")

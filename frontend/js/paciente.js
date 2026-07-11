@@ -1,4 +1,36 @@
 const API_URL = window.location.origin.replace('-3000', '-8000').replace(':3000', ':8000');
+const HORA_APERTURA = 8;
+const HORA_CIERRE = 18;
+
+function generarHorarios() {
+    const select = document.getElementById('hora');
+    for (let h = HORA_APERTURA; h < HORA_CIERRE; h++) {
+        for (let m = 0; m < 60; m += 30) {
+            const hora = h.toString().padStart(2, '0');
+            const min = m.toString().padStart(2, '0');
+            const valor = `${hora}:${min}`;
+            select.innerHTML += `<option value="${valor}">${valor}</option>`;
+        }
+    }
+}
+
+async function cargarPerfil() {
+    const authToken = sessionStorage.getItem('access_token');
+    try {
+        const respuesta = await fetch(`${API_URL}/auth/mi-perfil`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        const datos = await respuesta.json();
+        if (!respuesta.ok) return;
+
+        document.getElementById('perfil-nombre').textContent = datos.nombre_completo;
+        document.getElementById('perfil-email').textContent = datos.email;
+        document.getElementById('perfil-historial').textContent = datos.historial_clinico_nro ? `Historial: ${datos.historial_clinico_nro}` : '';
+        document.getElementById('perfil-inicial').textContent = datos.nombre_completo.charAt(0).toUpperCase();
+    } catch (error) {
+        console.error('Error cargando perfil:', error);
+    }
+}
 
 async function cargarCitas() {
     const contenedor = document.getElementById('lista-citas');
@@ -8,7 +40,6 @@ async function cargarCitas() {
         const respuesta = await fetch(`${API_URL}/citas/mis-citas`, {
             headers: { 'Authorization': `Bearer ${authToken}` }
         });
-
         const datos = await respuesta.json();
 
         if (!respuesta.ok) {
@@ -33,14 +64,39 @@ async function cargarCitas() {
                 </div>
                 <div class="tarjeta-cita-v2-info">
                     <div class="tarjeta-cita-v2-fecha">${formatearFecha(cita.fecha_hora)}</div>
-                    <div class="tarjeta-cita-v2-motivo">${cita.motivo || 'Sin motivo especificado'}</div>
+                    <div class="tarjeta-cita-v2-motivo">Dr(a). ${cita.medico_nombre || 'No asignado'} — ${cita.motivo || 'Sin motivo especificado'}</div>
                 </div>
-                <span class="badge-estado ${cita.estado}">${cita.estado}</span>
+                <div class="tarjeta-cita-v2-acciones">
+                    <span class="badge-estado ${cita.estado}">${cita.estado}</span>
+                    ${cita.estado === 'pendiente' ? `<button class="boton-cancelar" onclick="cancelarCita(${cita.id})">Cancelar</button>` : ''}
+                </div>
             </div>
         `).join('');
 
     } catch (error) {
         contenedor.innerHTML = '<p>Error de conexion con el servidor.</p>';
+        console.error(error);
+    }
+}
+
+async function cancelarCita(citaId) {
+    if (!confirm('¿Seguro que quieres cancelar esta cita?')) return;
+
+    const authToken = sessionStorage.getItem('access_token');
+    try {
+        const respuesta = await fetch(`${API_URL}/citas/${citaId}/cancelar`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok) {
+            alert('Error: ' + (datos.detail || 'No se pudo cancelar'));
+            return;
+        }
+        cargarCitas();
+    } catch (error) {
+        alert('Error de conexion con el servidor');
         console.error(error);
     }
 }
@@ -52,8 +108,10 @@ document.getElementById('form-reservar').addEventListener('submit', async functi
     mensaje.textContent = '';
     const authToken = sessionStorage.getItem('access_token');
 
-    const fecha_hora = document.getElementById('fecha_hora').value;
+    const fecha = document.getElementById('fecha').value;
+    const hora = document.getElementById('hora').value;
     const motivo = document.getElementById('motivo').value;
+    const fechaHoraISO = new Date(`${fecha}T${hora}:00`).toISOString();
 
     try {
         const respuesta = await fetch(`${API_URL}/citas/reservar`, {
@@ -62,10 +120,7 @@ document.getElementById('form-reservar').addEventListener('submit', async functi
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${authToken}`
             },
-            body: JSON.stringify({
-                fecha_hora: new Date(fecha_hora).toISOString(),
-                motivo
-            })
+            body: JSON.stringify({ fecha_hora: fechaHoraISO, motivo })
         });
 
         const datos = await respuesta.json();
@@ -90,10 +145,11 @@ document.getElementById('form-reservar').addEventListener('submit', async functi
 
 function formatearFecha(fechaISO) {
     const fecha = new Date(fechaISO);
-    return fecha.toLocaleString('es-PE', {
-        dateStyle: 'long',
-        timeStyle: 'short'
-    });
+    return fecha.toLocaleString('es-PE', { dateStyle: 'long', timeStyle: 'short' });
 }
 
-document.addEventListener('DOMContentLoaded', cargarCitas);
+document.addEventListener('DOMContentLoaded', () => {
+    generarHorarios();
+    cargarPerfil();
+    cargarCitas();
+});

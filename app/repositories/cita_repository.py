@@ -32,3 +32,7 @@ class CitaRepository:
     def actualizar_estado(self, cita_id: int, nuevo_estado: str):
         resultado = self.db.table("citas").update({"estado": nuevo_estado}).eq("id", cita_id).execute()
         return resultado.data[0] if resultado.data else None
+
+    def actualizar(self, cita_id: int, datos: dict):
+        resultado = self.db.table("citas").update(datos).eq("id", cita_id).execute()
+        return resultado.data[0] if resultado.data else None

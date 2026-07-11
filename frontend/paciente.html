@@ -21,30 +21,75 @@
         </div>
     </header>
 
-    <main class="panel-cuerpo">
-        <div class="tarjeta-reserva">
-            <div class="tarjeta-reserva-titulo">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-                <h2>Reservar consulta general</h2>
+    <main class="panel-cuerpo" style="max-width:1040px;">
+        <div class="panel-grid">
+            <div class="panel-principal">
+
+                <div class="tarjeta-perfil" id="tarjeta-perfil">
+                    <div class="perfil-avatar" id="perfil-inicial">-</div>
+                    <div class="perfil-datos">
+                        <h3 id="perfil-nombre">Cargando...</h3>
+                        <div class="perfil-meta">
+                            <span id="perfil-email"></span>
+                            <span id="perfil-historial"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tarjeta-reserva">
+                    <div class="tarjeta-reserva-titulo">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                        <h2>Reservar consulta general</h2>
+                    </div>
+                    <form id="form-reservar">
+                        <div class="fila-horario">
+                            <div>
+                                <label for="fecha">Fecha</label>
+                                <input type="date" id="fecha" required>
+                            </div>
+                            <div>
+                                <label for="hora">Horario disponible</label>
+                                <select id="hora" required>
+                                    <option value="">Selecciona una hora</option>
+                                </select>
+                            </div>
+                        </div>
+                        <label for="motivo">Motivo</label>
+                        <input type="text" id="motivo" placeholder="Ej: Dolor de cabeza persistente">
+
+                        <button type="submit" class="boton-primario" style="width:100%; margin-top:18px;">Reservar cita</button>
+                    </form>
+                    <p id="mensaje-resultado"></p>
+                </div>
+
+                <div class="seccion-historial-titulo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+                    <h2>Historial de citas</h2>
+                </div>
+                <div id="lista-citas">
+                    <p>Cargando citas...</p>
+                </div>
+
             </div>
-            <form id="form-reservar">
-                <label for="fecha_hora">Fecha y hora</label>
-                <input type="datetime-local" id="fecha_hora" required>
 
-                <label for="motivo">Motivo</label>
-                <input type="text" id="motivo" placeholder="Ej: Dolor de cabeza persistente">
-
-                <button type="submit" class="boton-primario" style="width:100%; margin-top:18px;">Reservar cita</button>
-            </form>
-            <p id="mensaje-resultado"></p>
-        </div>
-
-        <div class="seccion-historial-titulo">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
-            <h2>Historial de citas</h2>
-        </div>
-        <div id="lista-citas">
-            <p>Cargando citas...</p>
+            <aside>
+                <div class="sidebar-campania">
+                    <span class="sidebar-campania-badge">Campaña activa</span>
+                    <h3>Chequeo preventivo gratuito este mes</h3>
+                    <p>Agenda tu consulta general sin costo si es tu primera visita en Vitalis.</p>
+                </div>
+                <div class="sidebar-info">
+                    <h4>Información de contacto</h4>
+                    <div class="sidebar-info-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+                        Lunes a sábado, 8:00am — 6:00pm
+                    </div>
+                    <div class="sidebar-info-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        (01) 555-0192
+                    </div>
+                </div>
+            </aside>
         </div>
     </main>
 
