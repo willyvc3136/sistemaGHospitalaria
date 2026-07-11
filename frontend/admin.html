@@ -2,62 +2,154 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Panel Administrador</title>
-    <link rel="stylesheet" href="css/estilos.css">
-    <link rel="stylesheet" href="css/panel.css">
+    <title>Panel Administrador — Vitalis</title>
+    <link rel="stylesheet" href="css/landing.css">
+    <link rel="stylesheet" href="css/panel-vitalis.css">
 </head>
 <body>
-    <div class="contenedor-panel" style="width: 700px;">
-        <div class="cabecera">
-            <h1>Panel de Administrador</h1>
-            <p id="bienvenida"></p>
-            <button onclick="cerrarSesion()">Cerrar sesion</button>
+    <header class="panel-header">
+        <div class="panel-marca">
+            <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+                <circle cx="16" cy="16" r="15" stroke="#0F4C46" stroke-width="2"/>
+                <path d="M8 16H12L14 10L18 22L20 16H24" stroke="#F2613F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Vitalis
+        </div>
+        <div class="panel-usuario">
+            <span class="panel-usuario-nombre" id="bienvenida"></span>
+            <button class="boton-salir" onclick="cerrarSesion()">Cerrar sesión</button>
+        </div>
+    </header>
+
+    <main class="panel-cuerpo" style="max-width:1040px;">
+        <div class="panel-grid">
+            <div class="panel-principal">
+
+        <div class="dashboard-stats">
+            <div class="stat-tarjeta">
+                <div class="stat-numero" id="stat-usuarios">-</div>
+                <div class="stat-etiqueta">Usuarios totales</div>
+            </div>
+            <div class="stat-tarjeta">
+                <div class="stat-numero" id="stat-pacientes">-</div>
+                <div class="stat-etiqueta">Pacientes</div>
+            </div>
+            <div class="stat-tarjeta">
+                <div class="stat-numero" id="stat-citas">-</div>
+                <div class="stat-etiqueta">Citas totales</div>
+            </div>
+            <div class="stat-tarjeta">
+                <div class="stat-numero" id="stat-ingresos">-</div>
+                <div class="stat-etiqueta">Ingresos cobrados</div>
+            </div>
         </div>
 
-        <h2>Usuarios del sistema</h2>
-        <div id="lista-usuarios">
-            <p>Cargando usuarios...</p>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+            <div class="seccion-historial-titulo" style="margin-bottom:0;">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>
+                <h2>Usuarios del sistema</h2>
+            </div>
+            <button class="boton-primario" onclick="abrirModalUsuario()">+ Nuevo usuario</button>
         </div>
 
-        <h2>Registrar nuevo usuario</h2>
-        <form id="form-usuario">
-            <label for="email">Correo electronico</label>
-            <input type="email" id="email" required>
+        <div class="lista-agenda-scroll" style="max-height:520px;">
+            <table class="tabla-usuarios">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Rol</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpo-tabla-usuarios">
+                    <tr><td colspan="5">Cargando usuarios...</td></tr>
+                </tbody>
+            </table>
+        </div>
 
-            <label for="password">Contrasena temporal</label>
-            <input type="password" id="password" required>
-
-            <label for="nombre_completo">Nombre completo</label>
-            <input type="text" id="nombre_completo" required>
-
-            <label for="rol_id">Rol</label>
-            <select id="rol_id" required>
-                <option value="">Selecciona un rol</option>
-                <option value="1">Administrador</option>
-                <option value="2">Médico</option>
-                <option value="3">Recepción</option>
-                <option value="4">Paciente</option>
-            </select>
-
-            <div id="campos-medico" style="display:none;">
-                <label for="especialidad">Especialidad</label>
-                <input type="text" id="especialidad">
-
-                <label for="colegiatura">Colegiatura</label>
-                <input type="text" id="colegiatura">
             </div>
 
-            <div id="campos-paciente" style="display:none;">
-                <label for="fecha_nacimiento">Fecha de nacimiento</label>
-                <input type="date" id="fecha_nacimiento">
+            <aside class="sidebar-sticky">
+                <div class="sidebar-campania">
+                    <span class="sidebar-campania-badge">Resumen</span>
+                    <h3>Panel de control general</h3>
+                    <p>Supervisa usuarios, citas e ingresos desde un solo lugar.</p>
+                </div>
+                <div class="sidebar-info">
+                    <h4>Buenas practicas</h4>
+                    <div class="sidebar-info-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg>
+                        Verifica credenciales antes de registrar personal
+                    </div>
+                    <div class="sidebar-info-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+                        Desactiva cuentas en vez de eliminarlas
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
 
-                <label for="telefono">Telefono</label>
-                <input type="text" id="telefono">
-            </div>
+    <div class="modal-fondo" id="modal-usuario">
+        <div class="modal-caja">
+            <h3>Registrar nuevo usuario</h3>
+            <form id="form-usuario">
+                <label for="email">Correo electrónico</label>
+                <input type="email" id="email" required style="width:100%; padding:10px 12px; border:1px solid var(--borde); border-radius:8px; font-size:14px;">
 
-            <button type="submit">Registrar Usuario</button>
-        </form>
-        <p id="mensaje-resultado"></p>
+                <label for="password">Contraseña temporal</label>
+                <input type="password" id="password" required style="width:100%; padding:10px 12px; border:1px solid var(--borde); border-radius:8px; font-size:14px;">
+
+                <label for="nombre_completo">Nombre completo</label>
+                <input type="text" id="nombre_completo" required style="width:100%; padding:10px 12px; border:1px solid var(--borde); border-radius:8px; font-size:14px;">
+
+                <label for="rol_id">Rol</label>
+                <select id="rol_id" required style="width:100%; padding:10px 12px; border:1px solid var(--borde); border-radius:8px; font-size:14px;">
+                    <option value="">Selecciona un rol</option>
+                    <option value="1">Administrador</option>
+                    <option value="2">Médico</option>
+                    <option value="3">Recepción</option>
+                    <option value="4">Paciente</option>
+                </select>
+
+                <div id="campos-medico" style="display:none;">
+                    <label for="especialidad">Especialidad</label>
+                    <input type="text" id="especialidad" style="width:100%; padding:10px 12px; border:1px solid var(--borde); border-radius:8px; font-size:14px;">
+                    <label for="colegiatura">Colegiatura</label>
+                    <input type="text" id="colegiatura" style="width:100%; padding:10px 12px; border:1px solid var(--borde); border-radius:8px; font-size:14px;">
+                </div>
+
+                <div id="campos-paciente" style="display:none;">
+                    <label for="fecha_nacimiento">Fecha de nacimiento</label>
+                    <input type="date" id="fecha_nacimiento" style="width:100%; padding:10px 12px; border:1px solid var(--borde); border-radius:8px; font-size:14px;">
+                    <label for="telefono">Teléfono</label>
+                    <input type="text" id="telefono" style="width:100%; padding:10px 12px; border:1px solid var(--borde); border-radius:8px; font-size:14px;">
+                </div>
+
+                <p id="mensaje-resultado" style="font-size:13px; margin-top:10px;"></p>
+
+                <div class="modal-botones">
+                    <button type="submit" class="boton-primario" style="flex:1;">Registrar</button>
+                    <button type="button" class="boton-cerrar-modal" onclick="cerrarModalUsuario()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-fondo" id="modal-editar">
+        <div class="modal-caja">
+            <h3>Editar usuario</h3>
+            <form id="form-editar">
+                <label for="editar_nombre">Nombre completo</label>
+                <input type="text" id="editar_nombre" required style="width:100%; padding:10px 12px; border:1px solid var(--borde); border-radius:8px; font-size:14px;">
+                <div class="modal-botones">
+                    <button type="submit" class="boton-primario" style="flex:1;">Guardar cambios</button>
+                    <button type="button" class="boton-cerrar-modal" onclick="cerrarModalEditar()">Cancelar</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script src="js/comun.js"></script>
