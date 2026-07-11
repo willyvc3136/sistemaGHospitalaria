@@ -712,3 +712,39 @@ body {
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+.tabla-usuarios {
+    table-layout: fixed;
+}
+
+.tabla-usuarios th:nth-child(1),
+.tabla-usuarios td:nth-child(1) {
+    width: 22%;
+}
+
+.tabla-usuarios th:nth-child(2),
+.tabla-usuarios td:nth-child(2) {
+    width: 28%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tabla-usuarios th:nth-child(3),
+.tabla-usuarios td:nth-child(3) {
+    width: 15%;
+}
+
+.tabla-usuarios th:nth-child(4),
+.tabla-usuarios td:nth-child(4) {
+    width: 13%;
+}
+
+.tabla-usuarios th:nth-child(5),
+.tabla-usuarios td:nth-child(5) {
+    width: 22%;
+}
+
+.acciones-usuario {
+    flex-wrap: wrap;
+}

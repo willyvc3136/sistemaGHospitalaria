@@ -52,7 +52,15 @@
             <button class="boton-primario" onclick="abrirModalUsuario()">+ Nuevo usuario</button>
         </div>
 
-        <div class="lista-agenda-scroll" style="max-height:520px;">
+        <div class="filtro-estado">
+            <button class="filtro-boton activo" data-rol="todos" onclick="filtrarUsuarios('todos', this)">Todos</button>
+            <button class="filtro-boton" data-rol="Administrador" onclick="filtrarUsuarios('Administrador', this)">Administradores</button>
+            <button class="filtro-boton" data-rol="Médico" onclick="filtrarUsuarios('Médico', this)">Médicos</button>
+            <button class="filtro-boton" data-rol="Recepción" onclick="filtrarUsuarios('Recepción', this)">Recepción</button>
+            <button class="filtro-boton" data-rol="Paciente" onclick="filtrarUsuarios('Paciente', this)">Pacientes</button>
+        </div>
+
+        <div class="lista-agenda-scroll" style="max-height:480px;">
             <table class="tabla-usuarios">
                 <thead>
                     <tr>
@@ -144,6 +152,23 @@
             <form id="form-editar">
                 <label for="editar_nombre">Nombre completo</label>
                 <input type="text" id="editar_nombre" required style="width:100%; padding:10px 12px; border:1px solid var(--borde); border-radius:8px; font-size:14px;">
+
+                <div id="editar-campos-medico" style="display:none;">
+                    <label for="editar_especialidad">Especialidad</label>
+                    <input type="text" id="editar_especialidad" style="width:100%; padding:10px 12px; border:1px solid var(--borde); border-radius:8px; font-size:14px;">
+                    <label for="editar_colegiatura">Colegiatura</label>
+                    <input type="text" id="editar_colegiatura" style="width:100%; padding:10px 12px; border:1px solid var(--borde); border-radius:8px; font-size:14px;">
+                </div>
+
+                <div id="editar-campos-paciente" style="display:none;">
+                    <label for="editar_telefono">Teléfono</label>
+                    <input type="text" id="editar_telefono" style="width:100%; padding:10px 12px; border:1px solid var(--borde); border-radius:8px; font-size:14px;">
+                    <label for="editar_fecha_nacimiento">Fecha de nacimiento</label>
+                    <input type="date" id="editar_fecha_nacimiento" style="width:100%; padding:10px 12px; border:1px solid var(--borde); border-radius:8px; font-size:14px;">
+                </div>
+
+                <p id="editar_mensaje" style="font-size:13px; margin-top:10px;"></p>
+
                 <div class="modal-botones">
                     <button type="submit" class="boton-primario" style="flex:1;">Guardar cambios</button>
                     <button type="button" class="boton-cerrar-modal" onclick="cerrarModalEditar()">Cancelar</button>
