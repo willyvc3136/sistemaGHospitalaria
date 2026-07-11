@@ -13,22 +13,13 @@ function generarHorarios() {
 }
 
 async function cargarListas() {
-    const selectPaciente = document.getElementById('paciente');
     const selectMedico = document.getElementById('medico');
     const authToken = sessionStorage.getItem('access_token');
 
     try {
-        const [respPacientes, respMedicos] = await Promise.all([
-            fetch(`${API_URL}/citas/lista-pacientes`, { headers: { 'Authorization': `Bearer ${authToken}` } }),
-            fetch(`${API_URL}/citas/lista-medicos`, { headers: { 'Authorization': `Bearer ${authToken}` } })
-        ]);
-
-        const datosPacientes = await respPacientes.json();
+        const respMedicos = await fetch(`${API_URL}/citas/lista-medicos`, { headers: { 'Authorization': `Bearer ${authToken}` } });
         const datosMedicos = await respMedicos.json();
         listaMedicosGlobal = datosMedicos.medicos;
-
-        selectPaciente.innerHTML = '<option value="">Selecciona un paciente</option>' +
-            datosPacientes.pacientes.map(p => `<option value="${p.usuario_id}">${p.profiles.nombre_completo}</option>`).join('');
 
         selectMedico.innerHTML = '<option value="">Selecciona un medico</option>' +
             datosMedicos.medicos.map(m => `<option value="${m.usuario_id}">${m.profiles.nombre_completo} (${m.especialidad})</option>`).join('');
@@ -36,6 +27,61 @@ async function cargarListas() {
     } catch (error) {
         console.error('Error cargando listas:', error);
     }
+}
+
+let temporizadorBusqueda = null;
+
+function inicializarAutocompletado() {
+    const inputBusqueda = document.getElementById('paciente_busqueda');
+    const inputOculto = document.getElementById('paciente');
+    const lista = document.getElementById('autocompletar-lista');
+
+    inputBusqueda.addEventListener('input', function () {
+        inputOculto.value = '';
+        const texto = this.value.trim();
+
+        clearTimeout(temporizadorBusqueda);
+        if (texto.length < 2) {
+            lista.classList.remove('activa');
+            return;
+        }
+
+        temporizadorBusqueda = setTimeout(async () => {
+            const authToken = sessionStorage.getItem('access_token');
+            try {
+                const respuesta = await fetch(`${API_URL}/citas/buscar-pacientes?q=${encodeURIComponent(texto)}`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const datos = await respuesta.json();
+
+                if (datos.pacientes.length === 0) {
+                    lista.innerHTML = '<div class="autocompletar-vacio">Sin coincidencias</div>';
+                } else {
+                    lista.innerHTML = datos.pacientes.map(p =>
+                        `<div class="autocompletar-item" data-id="${p.usuario_id}" data-nombre="${p.nombre_completo}">${p.nombre_completo}</div>`
+                    ).join('');
+                }
+                lista.classList.add('activa');
+
+                lista.querySelectorAll('.autocompletar-item').forEach(item => {
+                    item.addEventListener('click', function () {
+                        inputBusqueda.value = this.dataset.nombre;
+                        inputOculto.value = this.dataset.id;
+                        lista.classList.remove('activa');
+                    });
+                });
+
+            } catch (error) {
+                console.error('Error buscando pacientes:', error);
+            }
+        }, 300);
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('.autocompletar-contenedor')) {
+            lista.classList.remove('activa');
+        }
+    });
 }
 
 async function cargarAgenda() {
@@ -216,4 +262,5 @@ document.addEventListener('DOMContentLoaded', () => {
     generarHorarios();
     cargarListas();
     cargarAgenda();
+    inicializarAutocompletado();
 });

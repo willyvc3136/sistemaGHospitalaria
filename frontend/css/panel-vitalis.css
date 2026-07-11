@@ -549,3 +549,49 @@ body {
     font-family: 'Inter', sans-serif;
     max-width: 140px;
 }
+
+.autocompletar-contenedor {
+    position: relative;
+}
+
+.autocompletar-lista {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    margin-top: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 20;
+    box-shadow: 0 8px 20px rgba(15, 76, 70, 0.1);
+}
+
+.autocompletar-lista.activa {
+    display: block;
+}
+
+.autocompletar-item {
+    padding: 10px 14px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.autocompletar-item:hover {
+    background-color: var(--fondo);
+}
+
+.autocompletar-vacio {
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--texto-suave);
+}
+
+.lista-agenda-scroll {
+    max-height: 480px;
+    overflow-y: auto;
+    padding-right: 4px;
+}

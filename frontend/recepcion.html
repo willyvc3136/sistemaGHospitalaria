@@ -31,10 +31,12 @@
                         <h2>Registrar nueva cita</h2>
                     </div>
                     <form id="form-cita">
-                        <label for="paciente">Paciente</label>
-                        <select id="paciente" required>
-                            <option value="">Cargando...</option>
-                        </select>
+                        <label for="paciente_busqueda">Paciente</label>
+                        <div class="autocompletar-contenedor">
+                            <input type="text" id="paciente_busqueda" placeholder="Escribe el nombre del paciente..." autocomplete="off" required>
+                            <input type="hidden" id="paciente" required>
+                            <div class="autocompletar-lista" id="autocompletar-lista"></div>
+                        </div>
 
                         <label for="medico">Médico</label>
                         <select id="medico" required>
@@ -73,8 +75,10 @@
                     <button class="filtro-boton" data-filtro="confirmada" onclick="filtrarAgenda('confirmada', this)">Confirmadas</button>
                 </div>
 
-                <div id="lista-agenda">
-                    <p>Cargando agenda...</p>
+                <div class="lista-agenda-scroll">
+                    <div id="lista-agenda">
+                        <p>Cargando agenda...</p>
+                    </div>
                 </div>
 
             </div>
