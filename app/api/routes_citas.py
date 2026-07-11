@@ -143,3 +143,83 @@ def historial_paciente(
     service = CitaService()
     citas = service.listar_citas_de_paciente(paciente_id)
     return {"citas": citas}
+
+
+@router.get("/agenda-completa")
+def agenda_completa(usuario_actual: dict = Depends(requiere_rol("Recepción", "Administrador"))):
+    """
+    Retorna todas las citas del sistema, con nombre de paciente y medico,
+    para que Recepcion tenga vision completa del dia.
+    """
+    service = CitaService()
+    db = get_db()
+    resultado = db.table("citas").select("*").order("fecha_hora", desc=False).execute()
+    citas = resultado.data
+
+    citas = service._enriquecer_con_nombre_medico(citas)
+    citas = service._enriquecer_con_nombre_paciente(citas)
+
+    return {"citas": citas}
+
+
+@router.post("/{cita_id}/confirmar-recepcion")
+def confirmar_cita_recepcion(
+    cita_id: int,
+    usuario_actual: dict = Depends(requiere_rol("Recepción", "Administrador"))
+):
+    """
+    Recepcion o Administrador confirman una cita pendiente.
+    """
+    db = get_db()
+    cita = db.table("citas").select("*").eq("id", cita_id).single().execute()
+    if not cita.data:
+        raise HTTPException(status_code=404, detail="Cita no encontrada")
+    if cita.data["estado"] != "pendiente":
+        raise HTTPException(status_code=400, detail=f"No se puede confirmar una cita en estado '{cita.data['estado']}'")
+
+    resultado = db.table("citas").update({"estado": "confirmada"}).eq("id", cita_id).execute()
+    return {"mensaje": "Cita confirmada", "cita": resultado.data[0]}
+
+
+@router.post("/{cita_id}/cancelar-recepcion")
+def cancelar_cita_recepcion(
+    cita_id: int,
+    usuario_actual: dict = Depends(requiere_rol("Recepción", "Administrador"))
+):
+    """
+    Recepcion o Administrador cancelan una cita.
+    """
+    db = get_db()
+    cita = db.table("citas").select("*").eq("id", cita_id).single().execute()
+    if not cita.data:
+        raise HTTPException(status_code=404, detail="Cita no encontrada")
+    if cita.data["estado"] in ("cancelada", "atendida"):
+        raise HTTPException(status_code=400, detail=f"No se puede cancelar una cita en estado '{cita.data['estado']}'")
+
+    resultado = db.table("citas").update({"estado": "cancelada"}).eq("id", cita_id).execute()
+    return {"mensaje": "Cita cancelada", "cita": resultado.data[0]}
+
+
+class DerivarCitaRequest(BaseModel):
+    nuevo_medico_id: str
+
+
+@router.post("/{cita_id}/derivar")
+def derivar_cita(
+    cita_id: int,
+    datos: DerivarCitaRequest,
+    usuario_actual: dict = Depends(requiere_rol("Recepción", "Administrador"))
+):
+    """
+    Recepcion reasigna una cita a otro medico (ej. derivar a un especialista).
+    Solo permitido si la cita esta pendiente.
+    """
+    db = get_db()
+    cita = db.table("citas").select("*").eq("id", cita_id).single().execute()
+    if not cita.data:
+        raise HTTPException(status_code=404, detail="Cita no encontrada")
+    if cita.data["estado"] != "pendiente":
+        raise HTTPException(status_code=400, detail="Solo se pueden derivar citas pendientes")
+
+    resultado = db.table("citas").update({"medico_id": datos.nuevo_medico_id}).eq("id", cita_id).execute()
+    return {"mensaje": "Cita derivada exitosamente", "cita": resultado.data[0]}
