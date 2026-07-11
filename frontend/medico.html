@@ -2,20 +2,65 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Mi Agenda</title>
-    <link rel="stylesheet" href="css/estilos.css">
-    <link rel="stylesheet" href="css/panel.css">
+    <title>Mi Agenda — Vitalis</title>
+    <link rel="stylesheet" href="css/landing.css">
+    <link rel="stylesheet" href="css/panel-vitalis.css">
 </head>
 <body>
-    <div class="contenedor-panel">
-        <div class="cabecera">
-            <h1>Mi Agenda</h1>
-            <p id="bienvenida"></p>
-            <button onclick="cerrarSesion()">Cerrar sesion</button>
+    <header class="panel-header">
+        <div class="panel-marca">
+            <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+                <circle cx="16" cy="16" r="15" stroke="#0F4C46" stroke-width="2"/>
+                <path d="M8 16H12L14 10L18 22L20 16H24" stroke="#F2613F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Vitalis
+        </div>
+        <div class="panel-usuario">
+            <span class="panel-usuario-nombre" id="bienvenida"></span>
+            <button class="boton-salir" onclick="cerrarSesion()">Cerrar sesión</button>
+        </div>
+    </header>
+
+    <main class="panel-cuerpo" style="max-width:760px;">
+        <div class="resumen-dia">
+            <div class="resumen-item">
+                <div class="numero" id="contador-total">-</div>
+                <div class="etiqueta">Total de citas</div>
+            </div>
+            <div class="resumen-item">
+                <div class="numero" id="contador-pendientes">-</div>
+                <div class="etiqueta">Por confirmar</div>
+            </div>
+            <div class="resumen-item">
+                <div class="numero" id="contador-confirmadas">-</div>
+                <div class="etiqueta">Confirmadas</div>
+            </div>
         </div>
 
+        <div class="seccion-historial-titulo">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.5-1.5 2-3 2-5a5 5 0 0 0-10 0c0 2 .5 3.5 2 5"/><circle cx="12" cy="18" r="4"/></svg>
+            <h2>Mi agenda</h2>
+        </div>
         <div id="lista-citas">
             <p>Cargando agenda...</p>
+        </div>
+    </main>
+
+    <div class="modal-fondo" id="modal-atender">
+        <div class="modal-caja">
+            <h3>Registrar atención</h3>
+            <form id="form-atender">
+                <label for="diagnostico">Diagnóstico</label>
+                <textarea id="diagnostico" required></textarea>
+
+                <label for="receta">Receta</label>
+                <textarea id="receta"></textarea>
+
+                <div class="modal-botones">
+                    <button type="submit" class="boton-primario" style="flex:1;">Guardar</button>
+                    <button type="button" class="boton-cerrar-modal" onclick="cerrarModal()">Cancelar</button>
+                </div>
+            </form>
         </div>
     </div>
 

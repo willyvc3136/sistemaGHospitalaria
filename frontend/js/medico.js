@@ -1,14 +1,14 @@
 const API_URL = window.location.origin.replace('-3000', '-8000').replace(':3000', ':8000');
+let citaEnAtencion = null;
 
 async function cargarAgenda() {
     const contenedor = document.getElementById('lista-citas');
-    const token = sessionStorage.getItem('access_token');
+    const authToken = sessionStorage.getItem('access_token');
 
     try {
         const respuesta = await fetch(`${API_URL}/citas/mi-agenda`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: { 'Authorization': `Bearer ${authToken}` }
         });
-
         const datos = await respuesta.json();
 
         if (!respuesta.ok) {
@@ -16,16 +16,45 @@ async function cargarAgenda() {
             return;
         }
 
+        actualizarResumen(datos.citas);
+
         if (datos.citas.length === 0) {
-            contenedor.innerHTML = '<p>No tienes citas en tu agenda.</p>';
+            contenedor.innerHTML = `
+                <div class="estado-vacio">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                    <p>No tienes citas en tu agenda.</p>
+                </div>
+            `;
             return;
         }
 
         contenedor.innerHTML = datos.citas.map(cita => `
-            <div class="tarjeta-cita">
-                <div class="fecha">${formatearFecha(cita.fecha_hora)}</div>
-                <span class="estado ${cita.estado}">${cita.estado}</span>
-                <div class="motivo">${cita.motivo || 'Sin motivo especificado'}</div>
+            <div class="tarjeta-cita-v2">
+                <div class="tarjeta-cita-v2-icono">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+                </div>
+                <div class="tarjeta-cita-v2-info">
+                    <div class="tarjeta-cita-v2-fecha">${formatearFecha(cita.fecha_hora)}</div>
+                    <div class="tarjeta-cita-v2-motivo">${cita.paciente_nombre || 'Paciente'} — ${cita.motivo || 'Sin motivo especificado'}</div>
+                    ${cita.estado === 'atendida' ? `
+                        <div class="info-atendida">
+                            <strong>Diagnóstico:</strong> ${cita.diagnostico || '-'}<br>
+                            <strong>Receta:</strong> ${cita.receta || '-'}
+                        </div>
+                    ` : ''}
+                </div>
+                <div class="tarjeta-cita-v2-acciones">
+                    <span class="badge-estado ${cita.estado}">${cita.estado}</span>
+                    <div class="acciones-cita">
+                        ${cita.estado === 'pendiente' ? `
+                            <button class="boton-confirmar" onclick="confirmarCita(${cita.id})">Confirmar</button>
+                            <button class="boton-cancelar" onclick="cancelarCitaMedico(${cita.id})">Cancelar</button>
+                        ` : ''}
+                        ${cita.estado === 'confirmada' ? `
+                            <button class="boton-atender" onclick="abrirModal(${cita.id})">Atender</button>
+                        ` : ''}
+                    </div>
+                </div>
             </div>
         `).join('');
 
@@ -35,12 +64,95 @@ async function cargarAgenda() {
     }
 }
 
+function actualizarResumen(citas) {
+    document.getElementById('contador-total').textContent = citas.length;
+    document.getElementById('contador-pendientes').textContent = citas.filter(c => c.estado === 'pendiente').length;
+    document.getElementById('contador-confirmadas').textContent = citas.filter(c => c.estado === 'confirmada').length;
+}
+
+async function confirmarCita(citaId) {
+    const authToken = sessionStorage.getItem('access_token');
+    try {
+        const respuesta = await fetch(`${API_URL}/citas/${citaId}/confirmar`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        const datos = await respuesta.json();
+        if (!respuesta.ok) {
+            alert('Error: ' + (datos.detail || 'No se pudo confirmar'));
+            return;
+        }
+        cargarAgenda();
+    } catch (error) {
+        alert('Error de conexion con el servidor');
+        console.error(error);
+    }
+}
+
+async function cancelarCitaMedico(citaId) {
+    if (!confirm('¿Seguro que quieres cancelar esta cita?')) return;
+    const authToken = sessionStorage.getItem('access_token');
+    try {
+        const respuesta = await fetch(`${API_URL}/citas/${citaId}/cancelar-medico`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        const datos = await respuesta.json();
+        if (!respuesta.ok) {
+            alert('Error: ' + (datos.detail || 'No se pudo cancelar'));
+            return;
+        }
+        cargarAgenda();
+    } catch (error) {
+        alert('Error de conexion con el servidor');
+        console.error(error);
+    }
+}
+
+function abrirModal(citaId) {
+    citaEnAtencion = citaId;
+    document.getElementById('modal-atender').classList.add('activo');
+}
+
+function cerrarModal() {
+    citaEnAtencion = null;
+    document.getElementById('form-atender').reset();
+    document.getElementById('modal-atender').classList.remove('activo');
+}
+
+document.getElementById('form-atender').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    if (!citaEnAtencion) return;
+
+    const authToken = sessionStorage.getItem('access_token');
+    const diagnostico = document.getElementById('diagnostico').value;
+    const receta = document.getElementById('receta').value;
+
+    try {
+        const respuesta = await fetch(`${API_URL}/citas/${citaEnAtencion}/atender`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            },
+            body: JSON.stringify({ diagnostico, receta })
+        });
+        const datos = await respuesta.json();
+        if (!respuesta.ok) {
+            alert('Error: ' + (datos.detail || 'No se pudo registrar la atencion'));
+            return;
+        }
+        cerrarModal();
+        cargarAgenda();
+    } catch (error) {
+        alert('Error de conexion con el servidor');
+        console.error(error);
+    }
+});
+
 function formatearFecha(fechaISO) {
     const fecha = new Date(fechaISO);
-    return fecha.toLocaleString('es-PE', {
-        dateStyle: 'long',
-        timeStyle: 'short'
-    });
+    return fecha.toLocaleString('es-PE', { dateStyle: 'long', timeStyle: 'short' });
 }
 
 document.addEventListener('DOMContentLoaded', cargarAgenda);
