@@ -67,15 +67,39 @@ Cuando se crea una cita, `CitaService` notifica a los observadores registrados (
 |---|---|---|---|
 | GET | `/admin/usuarios` | Lista todos los usuarios | Administrador |
 | POST | `/admin/usuarios` | Registra un usuario nuevo (Factory Method) | Administrador |
+| PATCH | `/admin/usuarios/{id}` | Edita nombre o activa/desactiva un usuario | Administrador |
+| GET | `/admin/usuarios/{id}/detalle` | Perfil completo con datos especificos por rol | Administrador |
+| PATCH | `/admin/usuarios/{id}/detalle` | Edita datos especificos (especialidad, telefono, etc.) | Administrador |
+| GET | `/admin/estadisticas` | Metricas generales (usuarios, citas, ingresos) | Administrador |
 
 ### Citas
 | Método | Ruta | Descripción | Acceso |
 |---|---|---|---|
-| POST | `/citas/` | Crea una nueva cita | Recepción, Administrador |
+| POST | `/citas/` | Crea una nueva cita con medico especifico | Recepción, Administrador |
+| POST | `/citas/reservar` | El paciente reserva su propia cita (Medicina General) | Paciente |
+| POST | `/citas/{id}/cancelar` | El paciente cancela su propia cita pendiente | Paciente |
+| POST | `/citas/{id}/confirmar` | El medico confirma una cita asignada | Médico |
+| POST | `/citas/{id}/cancelar-medico` | El medico cancela una cita asignada | Médico |
+| POST | `/citas/{id}/atender` | Marca como atendida con diagnostico y receta | Médico |
+| POST | `/citas/{id}/confirmar-recepcion` | Recepcion confirma una cita | Recepción, Administrador |
+| POST | `/citas/{id}/cancelar-recepcion` | Recepcion cancela una cita | Recepción, Administrador |
+| POST | `/citas/{id}/derivar` | Reasigna la cita a otro medico | Recepción, Administrador |
+| POST | `/citas/{id}/cobrar` | Marca la cita como pagada | Recepción, Administrador |
 | GET | `/citas/mis-citas` | Lista las citas del paciente autenticado | Paciente |
 | GET | `/citas/mi-agenda` | Lista la agenda del médico autenticado | Médico |
+| GET | `/citas/agenda-completa` | Todas las citas del sistema | Recepción, Administrador |
 | GET | `/citas/lista-pacientes` | Lista de pacientes (para formularios) | Recepción, Administrador |
 | GET | `/citas/lista-medicos` | Lista de médicos (para formularios) | Recepción, Administrador |
+| GET | `/citas/buscar-pacientes?q=` | Busqueda de pacientes por nombre (autocompletado) | Recepción, Administrador |
+| GET | `/citas/directorio-pacientes` | Lista completa de pacientes con datos de contacto | Recepción, Administrador |
+| GET | `/citas/historial-paciente/{id}` | Historial completo (con diagnostico/receta) | Médico, Administrador |
+| GET | `/citas/historial-basico/{id}` | Historial sin datos clinicos sensibles | Recepción, Administrador |
+
+### Registro publico y perfil
+| Método | Ruta | Descripción | Acceso |
+|---|---|---|---|
+| POST | `/auth/registro-paciente` | Registro publico, siempre como rol Paciente | Público |
+| GET | `/auth/mi-perfil` | Datos del paciente autenticado | Paciente |
 
 ### Utilidad
 | Método | Ruta | Descripción | Acceso |
@@ -120,20 +144,23 @@ Todos con contraseña: `Willy123!`
 - [x] RBAC funcionando y probado en los 4 roles
 - [x] Los 6 patrones de diseño implementados y probados
 - [x] Frontend funcional para los 4 roles
-- [x] Landing page con identidad visual "Vitalis"
+- [x] Landing page con identidad visual "Vitalis" (ilustracion, linea de pulso animada)
 - [x] Registro publico de pacientes
-- [x] Reserva de cita propia por el paciente (con validacion de horario)
+- [x] Reserva de cita propia por el paciente (con validacion de horario 8am-6pm)
 - [x] Ciclo completo de citas: pendiente -> confirmada -> atendida (con diagnostico/receta)
-- [x] Panel de Paciente rediseñado (perfil, historial, cancelar cita)
-- [x] Panel de Medico rediseñado (agenda, historial clinico del paciente, sidebar)
-- [x] Panel de Recepcion rediseñado (agenda completa, confirmar/cancelar/derivar citas)
-- [ ] Autocompletado de pacientes en formularios (en vez de desplegable)
-- [ ] Scroll interno en listados largos de citas
-- [ ] Recepcion puede registrar pacientes nuevos directamente
-- [ ] Buscador de citas por nombre de paciente
-- [ ] Panel de Administrador rediseñado + editar/desactivar usuarios
+- [x] Sistema de cobro por cita (monto + estado de pago)
+- [x] Derivacion de citas a especialista (por Recepcion/Admin)
+- [x] Panel de Paciente: perfil, reserva con horario disponible, historial, cancelar cita
+- [x] Panel de Medico: agenda, confirmar/atender citas, historial clinico del paciente, sidebar
+- [x] Panel de Recepcion: agenda completa con filtros y scroll, cobro, directorio de pacientes
+      con buscador/orden, autocompletado de pacientes, registro de pacientes nuevos, historial
+      sin datos clinicos sensibles
+- [x] Panel de Administrador: dashboard con estadisticas, gestion de usuarios filtrada por rol,
+      edicion de datos especificos (especialidad/colegiatura o telefono/fecha nacimiento),
+      activar/desactivar usuarios
 - [ ] Row Level Security (RLS) activado en todas las tablas
 - [ ] Recuperacion de contrasena
+- [ ] Reportes mas detallados (ingresos por periodo, citas por medico)
 
 ## Cómo retomar el proyecto desde otra PC
 
