@@ -120,9 +120,20 @@ Todos con contraseña: `Willy123!`
 - [x] RBAC funcionando y probado en los 4 roles
 - [x] Los 6 patrones de diseño implementados y probados
 - [x] Frontend funcional para los 4 roles
+- [x] Landing page con identidad visual "Vitalis"
+- [x] Registro publico de pacientes
+- [x] Reserva de cita propia por el paciente (con validacion de horario)
+- [x] Ciclo completo de citas: pendiente -> confirmada -> atendida (con diagnostico/receta)
+- [x] Panel de Paciente rediseñado (perfil, historial, cancelar cita)
+- [x] Panel de Medico rediseñado (agenda, historial clinico del paciente, sidebar)
+- [x] Panel de Recepcion rediseñado (agenda completa, confirmar/cancelar/derivar citas)
+- [ ] Autocompletado de pacientes en formularios (en vez de desplegable)
+- [ ] Scroll interno en listados largos de citas
+- [ ] Recepcion puede registrar pacientes nuevos directamente
+- [ ] Buscador de citas por nombre de paciente
+- [ ] Panel de Administrador rediseñado + editar/desactivar usuarios
 - [ ] Row Level Security (RLS) activado en todas las tablas
-- [ ] Endpoints adicionales de Médico (diagnósticos, recetas)
-- [ ] Endpoints adicionales de Administrador (editar/desactivar usuarios)
+- [ ] Recuperacion de contrasena
 
 ## Cómo retomar el proyecto desde otra PC
 
